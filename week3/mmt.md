@@ -736,7 +736,7 @@ Giao tiếp trong mạng VXLAN:
 *   Broadcast Communication: Xét trường hợp VM nguồn và đích cùng thuộc một subnet và chúng giao tiếp với nhau thông qua địa chỉ IP. Giả sử như VM nguồn muốn gửi đi một frame ARP quảng bá. Trong môi trường VLAN thông thường, gói tin sẽ được broadcast qua tất cả các switches nằm trong VLAN đó. Với VxLAN, các tiêu đề bao gồm tiêu đề của VxLAN, tiêu đề outer UDP và tiêu đề outer IP được thêm vào frame tin trước khi nó được truyền đi cho một nhóm IP multicast mà VxLAN biết (không phải là toàn bộ mạng VxLAN). Để làm được điều này, cần có một cơ chế mapping giữa VNI và nhóm IP multicast được lưu trong một bảng IGMP
 
 
-<p style="text-align: center;"> Hình 5.6.4: Mapping VNI, IP multicast group và các VTEPs </p>
+<p style="text-align: center;">Hình 5.6.4: Mapping VNI, IP multicast group và các VTEPs</p>
 
 ![vxlan-mapping](./vxlan-mapping.png)
 
@@ -766,5 +766,7 @@ Các nhiệm vụ chính của tầng vật lý là điều chế tín hiệu v�
 ## References
 
 [1] Computer Networks - A Tanenbaum - 5th edition
+
 [2] Computer Networking A Top-down Approach - James F. Kurose, Keith W. Ros - 6th edition
+
 [3] TCP/IP Tutorial and Technical Overview - IBM - 8th edition
