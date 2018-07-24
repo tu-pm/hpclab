@@ -1,5 +1,3 @@
-topdown - 4.3. what is in side a router?
-
 # ÔN TẬP MẠNG MÁY TÍNH
 
 ## Table of Contents
