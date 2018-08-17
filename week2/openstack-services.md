@@ -78,9 +78,15 @@ Dịch vụ xác thực danh tính (keystone) của OpenStack là một dịch v
 
 Tất cả mọi thứ trong OpenStack đều tồn tại trong một tenant (project). Mỗi tenant là một nhóm các đối tượng như users, instances và networks. Mỗi người dùng phải ghi danh đối với một tenant nào đó để có thể được authenticate và tham gia giao tiếp với các thành phần khác của hệ thống.
 
-Keystone cũng lưu trữ các catalog bao gồm các dịch vụ và các điểm cuối của từng thành phần trong một cụm. Do mỗi thành phần có một API đầu ra riêng biệt nên bằng cách khai báo chúng cho Keystone, người dùng chỉ cần biết địa chỉ của Keystone server để có thể tương tác với một phân cụm bất kỳ. Ví dụ, nếu muốn biết địa chỉ endpoint của một thành phần nào đó, người dùng chỉ việc yêu cầu Keystone tra cứu và trả về kết quả. Nếu như có sự thay đổi nào đó đối với các endpoints, Keystone sẽ cập nhật lại bản ghi và người dùng sẽ biết đến sự thay đổi này tại lần yêu cầu sau đó.
+Keystone cũng lưu trữ các catalog bao gồm các dịch vụ và các endpoints của từng thành phần trong một cụm. Do mỗi thành phần có một API đầu ra riêng biệt nên bằng cách khai báo chúng cho Keystone, người dùng chỉ cần biết địa chỉ của Keystone server để có thể tương tác với một phân cụm bất kỳ. Ví dụ, nếu muốn biết địa chỉ endpoint của một thành phần nào đó, người dùng chỉ việc yêu cầu Keystone tra cứu và trả về kết quả. Nếu như có sự thay đổi nào đó đối với các endpoints, Keystone sẽ cập nhật lại bản ghi và người dùng sẽ biết đến sự thay đổi này tại lần yêu cầu sau đó. 
 
 Keystone sử dụng cơ chế xác thực mặc định là cơ chế tài khoản/mật khẩu. Sau khi xác thực danh tính thành công, Keystone sẽ cấp phát cho người dùng một token thuộc một trong các loại UUID, PKI, PKIZ và Fernet để sử dụng cho các yêu cầu sau đó. Token này có chức năng giúp hệ thống xác định quyền của người dùng đối với tài nguyên được yêu cầu và ra quyết định chấp nhận hay từ chối yêu cầu này. Keystone cũng có thể được tích hợp với các hệ thống bảo mật khác với các chính sách bảo mật riêng biệt và mạnh mẽ hơn.
+
+Các thành phần của Keystone là:
+
+*   Server: Một máy chủ tập trung cung cấp dịch vụ xác thực và cấp quyền sử dụng một giao diện RESTful
+*   Drivers: Cơ sở dữ liệu chứa các thông tin định danh (SQL hay LDAP)
+*   Modules: Các middlewares đảm nhận nhiệm vụ nhận yêu cầu dịch vụ, lấy thông tin xác thực và gửi đến server để xác thực và cấp quyền, sử dụng Python Web Server Gateway Interface
 
 ### Glance
 
@@ -91,6 +97,14 @@ Glance là thành phần quản lý image của OpenStack. Một image là một
 Các images cũng có thể được cá nhân hóa cho các mục đích khác bên cạnh việc cài đặt hệ điều hành. Nếu một instance được yêu cầu khởi động nhiều lần thì các thao tác cấu hình lặp lại có thể được thực hiện trước và gắn vào disk image. Ví dụ, nếu một disk image được sử dụng để xây dựng một cụm web server, việc cài đặt trước webserver packages lên disk image trước khi lưu nó trong Glance sẽ giúp tiết kiệm băng thông và thời gian hơn là việc cài đặt và cấu hình lặp lại nhiều lần mỗi khi chạy instance.
 
 Cách đơn giản nhất để tạo một disk image là cài đặt máy ảo thủ công, loại bỏ các thông tin đặc trưng cho host và yêu cầu các thông tin này khi chạy bằng cách định nghĩa cloud-init cho image (hầu hết các bản phân phối đều đi kèm đoạn script cloud-init riêng, người dùng chỉ việc thêm chúng vào image).
+
+Glance bao gồm các thành phần chính:
+
+*   glance-api
+*   glance-registry: Lưu trữ, xử lý và truy xuất metadata của images
+*   Database: Lưu trữ image metadata
+*   Storage repository for image files
+*   Metadata definition service: Phục vụ customize image definition
 
 ### Neutron
 

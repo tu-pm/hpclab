@@ -2,41 +2,42 @@
 
 ## Table of Contents
 
-1. [Table of Contents](#table-of-contents)
-1. [Overview](#overview)
-    1. [Types of Virtualization](#types-of-virtualization)
-    1. [Introducing VMM/Hypervisor](#introducing-vmmhypervisor)
-    1. [Introducing KVM](#introducing-kvm)
-1. [KVM Internals](#kvm-internals)
-    1. [libvirt](#libvirt)
-    1. [QEMU](#qemu)
-    1. [KVM](#kvm)
-1. [Libvirt Networking Management](#libvirt-networking-management)
-    1. [Create libvirt Network](#create-libvirt-network)
-    1. [View libvirt Network Information](#view-libvirt-network-information)
-    1. [Edit a libvirt network](#edit-a-libvirt-network)
-    1. [Delete a libvirt Network](#delete-a-libvirt-network)
-1. [Libvirt Volume Management](#libvirt-volume-management)
-    1. [List All libvirt Storage Pools on Host](#list-all-libvirt-storage-pools-on-host)
-    1. [List All Volumes on a Pool](#list-all-volumes-on-a-pool)
-    1. [Create a Volume with Specified Size and Format](#create-a-volume-with-specified-size-and-format)
-    1. [Clone a Volume](#clone-a-volume)
-    1. [Delete a Volume](#delete-a-volume)
-1. [Libvirt Virtual Machine Management](#libvirt-virtual-machine-management)
-    1. [List All VMs Managed by libvirt](#list-all-vms-managed-by-libvirt)
-    1. [Create Standalone VMs](#create-standalone-vms)
-        1. [Create VMs with Minimum Arguments](#create-vms-with-minimum-arguments)
-        1. [Clone An Existed VM](#clone-an-existed-vm)
-    1. [Create VMs within a Network](#create-vms-within-a-network)
-        1. [More about libvirt Network Definition](#more-about-libvirt-network-definition)
-            1. [Network XML Definition File](#network-xml-definition-file)
-            1. [Attach or Change Network Definition for a VM](#attach-or-change-network-definition-for-a-vm)
-        1. [Types of Virtual Networking](#types-of-virtual-networking)
-        1. [Isolated Virtual Network](#isolated-virtual-network)
-        1. [Bridged Virtual Network](#bridged-virtual-network)
-        1. [Routed Virtual Network](#routed-virtual-network)
-        1. [NAT Based Virtual Network](#nat-based-virtual-network)
-1. [References](#references)
+*   [Overview](#overview)
+    *   [Types of Virtualization](#types-of-virtualization)
+    *   [Introducing VMM/Hypervisor](#introducing-vmmhypervisor)
+    *   [Introducing KVM](#introducing-kvm)
+*   [KVM Internals](#kvm-internals)
+    *   [libvirt](#libvirt)
+    *   [QEMU](#qemu)
+    *   [KVM](#kvm)
+*   [Libvirt Networking Management](#libvirt-networking-management)
+    *   [Create libvirt Network](#create-libvirt-network)
+    *   [View libvirt Network Information](#view-libvirt-network-information)
+    *   [Edit a libvirt network](#edit-a-libvirt-network)
+    *   [Delete a libvirt Network](#delete-a-libvirt-network)
+*   [Libvirt Volume Management](#libvirt-volume-management)
+    *   [List All libvirt Storage Pools on Host](#list-all-libvirt-storage-pools-on-host)
+    *   [List All Volumes on a Pool](#list-all-volumes-on-a-pool)
+    *   [Create a Volume with Specified Size and Format](#create-a-volume-with-specified-size-and-format)
+    *   [Clone a Volume](#clone-a-volume)
+    *   [Delete a Volume](#delete-a-volume)
+*   [Libvirt Virtual Machine Management](#libvirt-virtual-machine-management)
+    *   [List All VMs Managed by libvirt](#list-all-vms-managed-by-libvirt)
+    *   [Create Standalone VMs](#create-standalone-vms)
+        *   [Create VMs with Minimum Arguments](#create-vms-with-minimum-arguments)
+        *   [Clone An Existed VM](#clone-an-existed-vm)
+        *   [HPCC Server Notification](#hpcc-server-notification)
+    *   [Create VMs within a Network](#create-vms-within-a-network)
+        *   [More about libvirt Network Definition](#more-about-libvirt-network-definition)
+            *   [Network XML Definition File](#network-xml-definition-file)
+            *   [Attach or Change Network Definition for a VM](#attach-or-change-network-definition-for-a-vm)
+        *   [Types of Virtual Networking](#types-of-virtual-networking)
+        *   [Isolated Virtual Network](#isolated-virtual-network)
+        *   [Bridged Virtual Network](#bridged-virtual-network)
+        *   [Routed Virtual Network](#routed-virtual-network)
+        *   [NAT Based Virtual Network](#nat-based-virtual-network)
+*   [References](#references)
+
 
 ## Overview
 
@@ -261,8 +262,6 @@ root@Tubuntu:/home/tupham# virsh net-edit 192.168.160.0
 </network>
 
 
-
-
 File Name to Write: /tmp/virshDtRSsw.xml 
 
 ^G Get Help                  M-D DOS Format               M-A Append                   M-B Backup File
@@ -291,7 +290,6 @@ root@Tubuntu:/home/tupham# virsh net-list --all
 ----------------------------------------------------------
  192.168.160.0        inactive   yes           yes
  default              active     yes           yes
-
 ```
 
 *   Gỡ bỏ (undefine) mạng:
@@ -417,7 +415,7 @@ root@Tubuntu:/home/tupham# virsh vol-list --pool default
 *   Khởi tạo VM:
 
 ```bash
-root@Tubuntu:/home/tupham# virt-install --name tupham --ram 1024 --disk path=/var/lib/libvirt/images/tupham --cdrom /var/lib/libvirt/boot/ubuntu-16.04.4-desktop-amd64.iso
+root@Tubuntu:/home/tupham# virt-install --name tupham --ram 1024 --disk path=/var/lib/libvirt/images/tupham --cdrom ubuntu-16.04.4-server-amd64.iso
 
 Starting install...
 Creating domain...
@@ -460,6 +458,31 @@ Ba cách thường dùng để clone một VM là:
         # virt-clone \
         --original demo \
         --auto-clone
+
+#### HPCC Server Notification
+
+Lệnh `virt-install` có một option là `--graphics` dùng để cấu hình cách thức hiển thị cửa sổ guest. Nếu không không dùng option này, graphic server mặc định được sử dụng là `spice`. Tuy nhiên, nhiều máy chủ chỉ phục vụ `vnc` server, do vậy cần phải chỉ ra option này:
+
+        --graphics vnc,listen=0.0.0.0
+
+Địa chỉ listen=0.0.0.0 cho phép các máy khác cũng có thể truy cập vào cửa sổ của host (mặc định là 127.0.0.1 - localhost only)
+
+Để đảm bảo tính nhất quán, một vài option khác cũng nên được sử dụng khi cấu hình VM trên remote servers:
+
+```bash
+sudo virt-install \
+--virt-type=kvm \
+--name openvswitch-kvm \
+--ram 4096 \
+--vcpus=3 \
+--os-variant ubuntu16.04 \
+--virt-type=kvm \
+--hvm \
+--cdrom=/var/lib/libvirt/boot/ubuntu-16.04.2-server-amd64.iso \
+--network=network=192.168.160.0,model=virtio \
+--graphics vnc,listen=0.0.0.0 --noautoconsole \
+--disk path=/var/lib/libvirt/images/openvswitch-kvm.qcow2,bus=virtio,format=qcow2
+```
 
 ### Create VMs within a Network
 
@@ -582,7 +605,7 @@ Quá trình cài đặt mạng cho VM thông qua hai bước:
 
 #### Types of Virtual Networking
 
-Ba loại virtual networking thường gặp bao gồm:
+Những loại virtual networking thường gặp bao gồm:
 
 *   Isolated virtual network: Các VMs tham gia cùng một mạng cô lập có thể giao tiếp với nhau nhưng không thể giao tiếp với bên ngoài
 
