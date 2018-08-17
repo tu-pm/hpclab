@@ -1,5 +1,16 @@
 # Open vSwitch Mechanism Driver
 
+## Table of Contents
+
+*   [Provider Network](#provider-network)
+    *   [Prerequisites](#prerequisites)
+    *   [Architecture](#architecture)
+    *   [Network Traffic Flow](#network-traffic-flow)
+*   [Self Service Network](#self-service-network)
+    *   [Prerequisites](#prerequisites-1)
+    *   [Architecture](#architecture-1)
+    *   [Network Traffic Flow](#network-traffic-flow-1)
+
 ## Provider Network
 
 ### Prerequisites

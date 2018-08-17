@@ -1,5 +1,34 @@
 # OpenStack Pike Installation Note for Ubuntu
 
+## Table of Contents
+
+*   [OpenStack Network Layout](#openstack-network-layout)
+*   [Nodes Preparation](#nodes-preparation)
+    *   [Create VMs as Compute Node and Controller Node](#create-vms-as-compute-node-and-controller-node)
+    *   [VM's Network Configuration](#vms-network-configuration)
+    *   [Working with VMs using SSH](#working-with-vms-using-ssh)
+*   [Environment Preparation](#environment-preparation)
+    *   [Host networking](#host-networking)
+        *   [Controller Node](#controller-node)
+        *   [Compute Node](#compute-node)
+    *   [Network Time Protocol (NTP)](#network-time-protocol-ntp)
+    *   [OpenStack Packages](#openstack-packages)
+    *   [SQL Database](#sql-database)
+    *   [Message Queue](#message-queue)
+    *   [Memcached](#memcached)
+*   [Install OpenStack Services](#install-openstack-services)
+*   [Lauch an Instance](#lauch-an-instance)
+    *   [Create virtual networks](#create-virtual-networks)
+        *   [Create the Provider Network](#create-the-provider-network)
+        *   [Create the Self Service Network](#create-the-self-service-network)
+        *   [Create a Router on the Self Service Network](#create-a-router-on-the-self-service-network)
+        *   [Verify Operations](#verify-operations)
+    *   [Create server flavor](#create-server-flavor)
+    *   [Create an Ubuntu Server image](#create-an-ubuntu-server-image)
+    *   [Generate a key pair](#generate-a-key-pair)
+    *   [Add security group rules](#add-security-group-rules)
+    *   [Launch an instance](#launch-an-instance)
+
 ## OpenStack Network Layout
 
 Thiết kế network layout cho tenant:
@@ -733,6 +762,4 @@ Theo mặc định, `default` security group of rules được áp đặt lên t
     | 5997926a-04aa-4c18-a39d-b6fc8b4db850 | ubuntu16.04          | ACTIVE | selfservice=10.0.0.5 | ubuntu16.04 | m1.small |
     | edbd2ace-7a78-41af-a67c-db6c1d04c3d6 | selfservice-instance | ACTIVE | selfservice=10.0.0.7 | cirros      | m1.nano  |
     +--------------------------------------+----------------------+--------+----------------------+-------------+----------+
-    ```
-
-*   Laays 
+    ``` 

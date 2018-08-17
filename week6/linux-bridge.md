@@ -1,5 +1,22 @@
 # Linux Bridge Mechanism Driver
 
+## Table of Contents
+
+*   [Provider Network](#provider-network)
+    *   [Prerequisites](#prerequisites)
+    *   [Architecture](#architecture)
+    *   [Network Traffic Flow](#network-traffic-flow)
+    *   [Example Configuration](#example-configuration)
+*   [Selfservice Network](#selfservice-network)
+    *   [Prerequisites:](#prerequisites-1)
+    *   [Architecture](#architecture-1)
+    *   [Network Traffic Flow](#network-traffic-flow-1)
+    *   [Example Configuration](#example-configuration-1)
+*   [High Availability Using VRRP](#high-availability-using-vrrp)
+    *   [Prerequisites](#prerequisites-2)
+    *   [Architecture](#architecture-2)
+    *   [Network Traffic Flow](#network-traffic-flow-2)
+
 ## Provider Network
 
 Kiến trúc mạng provider network sử dụng linux bridge của OpenStack tạo ra kết nối tầng 2 giữa các instances và hạ tầng mạng vật lý sử dụng cơ chế VLAN tagging. Mỗi OpenStack project có thể chứa tối đa 01 mạng flat (untagged) và 4095 mạng VLAN thuộc loại provider network.
