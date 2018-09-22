@@ -1,5 +1,37 @@
 # Getting Started with Docker
 
+## Table of Contents
+
+*   [Orientation and Setup](#orientation-and-setup)
+    *   [Docker concepts](#docker-concepts)
+        *   [Images and Containers](#images-and-containers)
+        *   [Containers and Virtual Machines](#containers-and-virtual-machines)
+    *   [Prepare Your Docker Environment](#prepare-your-docker-environment)
+    *   [Recap and Cheat Sheet](#recap-and-cheat-sheet)
+*   [Containers](#containers)
+    *   [Define a Container with Dockerfile](#define-a-container-with-dockerfile)
+    *   [Build The App](#build-the-app)
+    *   [Share Images](#share-images)
+*   [Services](#services)
+    *   [Docker Compose](#docker-compose)
+    *   [About Services](#about-services)
+    *   [Docker Compose File Example](#docker-compose-file-example)
+    *   [Run The App](#run-the-app)
+    *   [Scale The App](#scale-the-app)
+    *   [Take down The App and The Swarm](#take-down-the-app-and-the-swarm)
+*   [Swarms](#swarms)
+    *   [Docker Machine](#docker-machine)
+    *   [Understand Swarm Clusters](#understand-swarm-clusters)
+    *   [Set up Your Swarm](#set-up-your-swarm)
+        *   [Create a Cluster](#create-a-cluster)
+    *   [Deploy Apps on the Swarm Cluster](#deploy-apps-on-the-swarm-cluster)
+    *   [Intergrating and Scaling Your App](#intergrating-and-scaling-your-app)
+    *   [Cleanup and Reboot](#cleanup-and-reboot)
+*   [Stacks](#stacks)
+    *   [Add New Services and Redeploy](#add-new-services-and-redeploy)
+    *   [Persist Data](#persist-data)
+*   [Deploy Your App](#deploy-your-app)
+
 ## Orientation and Setup
 
 ### Docker concepts
