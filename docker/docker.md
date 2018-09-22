@@ -185,11 +185,12 @@ Chú ý rằng, ta có hai file được tham chiếu đến trong dockerfile n�
 
 *   Đăng nhập:
 
-    docker login
+        docker login
 
 *   Đặt tên lại cho image theo khuôn dạng `username/repository:tag`:
 
-    docker tag tupm/get_started:part2
+        docker tag tupm/get_started:part2
+
 *   Publish image:
 
 ```bash
@@ -209,9 +210,9 @@ part2: digest: sha256:9a03fc0744d400893fbde18c46ac1d6a4476567a170b71a7bc210e5e37
 
 *   Từ một máy khác, pull image này về và chạy:
 
-    docker pull tupm/get_started:part2
-    docker tag tupm/get_started:part2 new_image
-    docker run -p 4000:80 new_image
+        docker pull tupm/get_started:part2
+        docker tag tupm/get_started:part2 new_image
+        docker run -p 4000:80 new_image
 
 ## Services
 
@@ -309,22 +310,22 @@ File này làm những công việc sau:
 
 *   Xem danh sách các services đã tạo:
 
-```bash
-root@Tubuntu:~/docker# docker service ls
-ID                  NAME                MODE                REPLICAS            IMAGE                    PORTS
-oswnn8ad2a02        tupm_web            replicated          0/5                 tupm/get_started:part2   *:4000->80/tcp
-```
+    ```bash
+    root@Tubuntu:~/docker# docker service ls
+    ID                  NAME                MODE                REPLICAS            IMAGE                    PORTS
+    oswnn8ad2a02        tupm_web            replicated          0/5                 tupm/get_started:part2   *:4000->80/tcp
+    ```
 *   Service chạy trên một container gọi là `task`, liệt kê tasks bằng câu lệnh:
 
-```bash
-root@Tubuntu:~/docker# docker service ps tupm_web
-ID                  NAME                IMAGE                    NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
-w1xx8tu5rghu        tupm_web.1          tupm/get_started:part2   Tubuntu             Running             Running 13 seconds ago                       
-nklrgfcqo88c        tupm_web.2          tupm/get_started:part2   Tubuntu             Running             Running 17 seconds ago                       
-rt4quabcvbwa        tupm_web.3          tupm/get_started:part2   Tubuntu             Running             Running 12 seconds ago                       
-m8ube1jqbl4p        tupm_web.4          tupm/get_started:part2   Tubuntu             Running             Running 13 seconds ago                       
-se0e04lx6lk9        tupm_web.5          tupm/get_started:part2   Tubuntu             Running             Running 17 seconds ago           
-```
+    ```bash
+    root@Tubuntu:~/docker# docker service ps tupm_web
+    ID                  NAME                IMAGE                    NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS
+    w1xx8tu5rghu        tupm_web.1          tupm/get_started:part2   Tubuntu             Running             Running 13 seconds ago                       
+    nklrgfcqo88c        tupm_web.2          tupm/get_started:part2   Tubuntu             Running             Running 17 seconds ago                       
+    rt4quabcvbwa        tupm_web.3          tupm/get_started:part2   Tubuntu             Running             Running 12 seconds ago                       
+    m8ube1jqbl4p        tupm_web.4          tupm/get_started:part2   Tubuntu             Running             Running 13 seconds ago                       
+    se0e04lx6lk9        tupm_web.5          tupm/get_started:part2   Tubuntu             Running             Running 17 seconds ago           
+    ```
 *   Các containers tương ứng với các tasks:
 
     ```bash
@@ -340,10 +341,10 @@ se0e04lx6lk9        tupm_web.5          tupm/get_started:part2   Tubuntu        
 
 *   Truy cập vào trang "http://localhost:4000"
 
-```bash
-root@Tubuntu:~/docker# curl http://localhost:4000
-<h3>Hello World!</h3><b>Hostname:</b> 759f855d74b4<br/><b>Visits:</b> <i>cannot connect to Redis, counter disabled</i>
-```
+    ```bash
+    root@Tubuntu:~/docker# curl http://localhost:4000
+    <h3>Hello World!</h3><b>Hostname:</b> 759f855d74b4<br/><b>Visits:</b> <i>cannot connect to Redis, counter disabled</i>
+    ```
 
 ### Scale The App
 
@@ -373,11 +374,11 @@ Sau đó khởi động lại app:
 
 *   Hủy app đang chạy:
 
-    docker stack rm tupm
+        docker stack rm tupm
 
 *   Hủy swarm
 
-    docker swarm leave --force
+        docker swarm leave --force
 
 ## Swarms
 
@@ -409,18 +410,18 @@ Khi chuyển hoạt động của Docker từ single-host mode sang swarm mode, 
 
 *   Khởi tạo swarm:
 
-    docker swarm init
+        docker swarm init
 
 *   hoặc join vào một swarm khác:
 
-    docker swarm join
+        docker swarm join
 
 #### Create a Cluster
 
 *   Tạo 2 VMs với `docker-machine`:
 
-    docker-machine create --driver virtualbox myvm1
-    docker-machine create --driver virtualbox myvm2
+        docker-machine create --driver virtualbox myvm1
+        docker-machine create --driver virtualbox myvm2
 
 *   Xem danh sách và địa chỉ IP của các VMs đã tạo:
 
@@ -465,7 +466,7 @@ Khi chuyển hoạt động của Docker từ single-host mode sang swarm mode, 
 
 *   Cấu hình `docker-machine` shell cho swarm manager:
 
-    eval $(docker-machine env myvm1)
+        eval $(docker-machine env myvm1)
 
 *   Như vậy, shell mà ta đang làm việc bây giờ thao tác trực tiếp với myvm1 thay vì thao tác với host, tuy nhiên nó vẫn có thể truy cập các files trên host một cách bình thường
 
@@ -507,15 +508,15 @@ Khi chuyển hoạt động của Docker từ single-host mode sang swarm mode, 
 
 *   Ngừng hoạt động app:
 
-    docker stack rm tupm
+        docker stack rm tupm
 
 *   Hủy swarm nếu muốn:
 
-    docker swarm leave --force (on each node)
+        docker swarm leave --force (on each node)
 
 *   Unset các biến môi trường của `docker-machine`:
 
-    eval $(docker-machine env -u)
+        eval $(docker-machine env -u)
 
 ## Stacks
 
@@ -563,11 +564,11 @@ Stack là một nhóm của các dịch vụ không liên quan đến nhau nhưn
 
 *   Triển khai lại app với file docker-compose đã được thay đổi:
 
-    docker stack deploy -c docker-compose.yml tupm
+        docker stack deploy -c docker-compose.yml tupm
 
 *   `visualizer` là service giúp hiển thị thông tin các service được tạo ra trên giao diện web, truy cập đến nó qua địa chỉ:
 
-    192.168.99.100:8080
+        192.168.99.100:8080
 
 ![alt text](./images/visualizer.png)
 
@@ -635,7 +636,7 @@ Tại đây ta thêm dịch vụ Redis database cho app.
 
 *   Lấy các biến môi trường của myvm1
 
-    eval $(docker-machine env myvm1)
+        eval $(docker-machine env myvm1)
 
 *   Deploy lại app:
 
@@ -660,7 +661,7 @@ Tại đây ta thêm dịch vụ Redis database cho app.
 
 ![alt text](./images/redis_index.png)
 
-*   Trang visulizer đã cập nhật service `tupm_redis`
+*   Trang visualizer đã cập nhật service `tupm_redis`
 
 ![alt text](./images/redis_visualizer.png)
 
