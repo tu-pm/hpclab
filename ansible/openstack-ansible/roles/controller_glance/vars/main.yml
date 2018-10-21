@@ -1,0 +1,67 @@
+---
+glance_api:
+  - name: database
+    attributes:
+      - option: connection
+        value: 'mysql+pymysql://glance:{{ GLANCE_DBPASS }}@controller/glance'
+  - name: keystone_authtoken
+    attributes:
+      - option: auth_uri
+        value: http://controller:5000
+      - option: auth_url
+        value: http://controller:35357
+      - option: memcached_servers
+        value: controller:11211
+      - option: auth_type
+        value: password
+      - option: project_domain_name
+        value: default
+      - option: user_domain_name
+        value: default
+      - option: project_name
+        value: service
+      - option: username
+        value: glance
+      - option: password
+        value: '{{ GLANCE_PASS }}'
+  - name: paste_deploy
+    attributes:
+      - option: flavor
+        value: keystone
+  - name: glance_store
+    attributes:
+      - option: stores
+        value: file,http
+      - option: default_store
+        value: file
+      - option: filesystem_store_datadir
+        value: /var/lib/glance/images/
+glance_registry:
+  - name: database
+    attributes:
+      - option: connection
+        value: 'mysql+pymysql://glance:{{ GLANCE_DBPASS }}@controller/glance'
+  - name: keystone_authtoken
+    attributes:
+      - option: auth_uri
+        value: http://controller:5000
+      - option: auth_url
+        value: http://controller:35357
+      - option: memcached_servers
+        value: controller:11211
+      - option: auth_type
+        value: password
+      - option: project_domain_name
+        value: default
+      - option: user_domain_name
+        value: default
+      - option: project_name
+        value: service
+      - option: username
+        value: glance
+      - option: password
+        value: '{{ GLANCE_PASS }}'
+  - name: paste_deploy
+    attributes:
+      - option: flavor
+        value: keystone

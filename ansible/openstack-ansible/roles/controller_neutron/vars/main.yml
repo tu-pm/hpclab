@@ -1,0 +1,148 @@
+---
+neutron_conf:
+  - name: database
+    attributes:
+      - option: connection
+        value: 'mysql+pymysql://neutron:{{ NEUTRON_DBPASS }}@controller/neutron'
+  - name: DEFAULT
+    attributes:
+      - option: core_plugin
+        value: ml2
+      - option: service_plugins
+        value: router
+      - option: allow_overlapping_ips
+        value: true
+      - option: transport_url
+        value: 'rabbit://openstack:{{ RABBIT_PASS }}@controller'
+      - option: auth_strategy
+        value: keystone
+      - option: notify_nova_on_port_status_changes
+        value: true
+      - option: notify_nova_on_port_data_changes
+        value: true
+  - name: keystone_authtoken
+    attributes:
+      - option: auth_uri
+        value: http://controller:5000
+      - option: auth_url
+        value: http://controller:35357
+      - option: memcached_servers
+        value: controller:11211
+      - option: auth_type
+        value: password
+      - option: project_domain_name
+        value: default
+      - option: user_domain_name
+        value: default
+      - option: project_name
+        value: service
+      - option: username
+        value: neutron
+      - option: password
+        value: '{{ NEUTRON_PASS }}'
+  - name: nova
+    attributes:
+      - option: auth_url
+        value: http://controller:35357
+      - option: auth_type
+        value: password
+      - option: project_domain_name
+        value: default
+      - option: user_domain_name
+        value: default
+      - option: region_name
+        value: RegionOne
+      - option: project_name
+        value: service
+      - option: username
+        value: nova
+      - option: password
+        value: '{{ NOVA_PASS }}'
+ml2_conf:
+  - name: ml2
+    attributes:
+      - option: type_drivers
+        value: flat,vlan,vxlan
+      - option: tenant_network_types
+        value: vxlan
+      - option: mechanism_drivers
+        value: linuxbridge,l2population
+      - option: extension_drivers
+        value: port_security
+  - name: ml2_type_flat
+    attributes:
+      - option: flat_networks
+        value: provider
+  - name: ml2_type_vxlan
+    attributes:
+      - option: vni_ranges
+        value: 1:1000
+  - name: securitygroup
+    attributes:
+      - option: enable_ipset
+        value: true
+linuxbridge_agent:
+  - name: linux_bridge
+    attributes:
+      - option: physical_interface_mappings
+        value: 'provider:{{ PROVIDER_INTERFACE_NAME }}'
+  - name: vxlan
+    attributes:
+      - option: enable_vxlan
+        value: true
+      - option: local_ip
+        value: '{{ OVERLAY_INTERFACE_IP_ADDRESS }}'
+      - option: l2_population
+        value: true
+  - name: securitygroup
+    attributes:
+      - option: enable_security_group
+        value: true
+      - option: firewall_driver
+        value: neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+l3_agent:
+  - name: DEFAULT
+    attributes:
+      - option: interface_driver
+        value: linuxbridge
+dhcp_agent:
+  - name: DEFAULT
+    attributes:
+      - option: interface_driver
+        value: linuxbridge
+      - option: dhcp_driver
+        value: neutron.agent.linux.dhcp.Dnsmasq
+      - option: enable_isolated_metadata
+        value: true
+metadata_agent:
+  - name: DEFAULT
+    attributes:
+      - option: nova_metadata_host
+        value: controller
+      - option: metadata_proxy_shared_secret
+        value: '{{ METADATA_SECRET }}'
+nova_conf:
+  - name: neutron
+    attributes:
+      - option: url
+        value: http://controller:9696
+      - option: auth_url
+        value: http://controller:35357
+      - option: auth_type
+        value: password
+      - option: project_domain_name
+        value: default
+      - option: user_domain_name
+        value: default
+      - option: region_name
+        value: RegionOne
+      - option: project_name
+        value: service
+      - option: username
+        value: neutron
+      - option: password
+        value: '{{ NEUTRON_PASS }}'
+      - option: service_metadata_proxy
+        value: true
+      - option: metadata_proxy_shared_secret
+        value: '{{ METADATA_SECRET }}'

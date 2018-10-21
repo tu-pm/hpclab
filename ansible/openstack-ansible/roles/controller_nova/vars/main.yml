@@ -1,0 +1,78 @@
+---
+nova_conf:
+  - name: api_database
+    attributes:
+      - option: connection
+        value: 'mysql+pymysql://nova:{{ NOVA_DBPASS }}@controller/nova_api'
+  - name: database
+    attributes:
+      - option: connection
+        value: 'mysql+pymysql://nova:{{ NOVA_DBPASS }}@controller/nova'
+  - name: api
+    attributes:
+      - option: auth_strategy
+        value: keystone
+  - name: keystone_authtoken
+    attributes:
+      - option: auth_uri
+        value: http://controller:5000
+      - option: auth_url
+        value: http://controller:35357
+      - option: memcached_servers
+        value: controller:11211
+      - option: auth_type
+        value: password
+      - option: project_domain_name
+        value: default
+      - option: user_domain_name
+        value: default
+      - option: project_name
+        value: service
+      - option: username
+        value: nova
+      - option: password
+        value: '{{ NOVA_PASS }}'
+  - name: DEFAULT
+    attributes:
+      - option: transport_url
+        value: 'rabbit://openstack:{{ RABBIT_PASS }}@controller'
+      - option: my_ip
+        value: '{{ PRIVATE_ADDRESS }}'
+      - option: use_neutron
+        value: True
+      - option: firewall_driver
+        value: nova.virt.firewall.NoopFirewallDriver
+  - name: vnc
+    attributes:
+      - option: enabled
+        value: true
+      - option: vncserver_listen
+        value: $my_ip
+      - option: vncserver_proxyclient_address
+        value: $my_ip
+  - name: glance
+    attributes:
+      - option: api_servers
+        value: http://controller:9292
+  - name: oslo_concurrency
+    attributes:
+      - option: lock_path
+        value: /var/lib/nova/tmp
+  - name: placement
+    attributes:
+      - option: os_region_name
+        value: RegionOne
+      - option: project_domain_name
+        value: Default
+      - option: project_name
+        value: service
+      - option: auth_type
+        value: password
+      - option: user_domain_name
+        value: Default
+      - option: auth_url
+        value: http://controller:35357/v3
+      - option: username
+        value: placement
+      - option: password
+        value: '{{ PLACEMENT_PASS }}'

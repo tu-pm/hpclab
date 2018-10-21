@@ -1,0 +1,55 @@
+---
+# Remote User
+REMOTE_USER: ubuntu
+
+# Network configuration
+
+PROVIDER_INTERFACE_NAME: ens3
+OVERLAY_INTERFACE_IP_ADDRESS: 10.1.1.71
+
+# Environment Variables
+
+CONTROLLER: controller
+HOST_NAME: compute
+TIME_ZONE: Asia/Ho_Chi_Minh
+
+# Service passwords
+ADMIN_PASS: 123         # Password of user admin
+CINDER_DBPASS: 123      # Database password for the Block Storage service
+CINDER_PASS: 123        # Password of Block Storage service user cinder
+DASH_DBPASS: 123        # Database password for the Dashboard
+DEMO_PASS: 123	        # Password of user demo
+GLANCE_DBPASS: 123	# Database password for Image service
+GLANCE_PASS: 123	# Password of Image service user glance
+KEYSTONE_DBPASS: 123	# Database password of Identity service
+METADATA_SECRET: 123	# Secret for the metadata proxy
+NEUTRON_DBPASS: 123	# Database password for the Networking service
+NEUTRON_PASS: 123	# Password of Networking service user neutron
+NOVA_DBPASS: 123	# Database password for Compute service
+NOVA_PASS: 123	        # Password of Compute service user nova
+PLACEMENT_PASS: 123	# Password of the Placement service user placement
+RABBIT_PASS: 123	# Password of RabbitMQ user openstack
+
+# Admin credentials
+ADMIN_OPENRC: /var/lib/keystone/admin-openrc
+ADMIN_CREDENTIALS:
+  OS_PROJECT_DOMAIN_NAME: Default
+  OS_USER_DOMAIN_NAME: Default
+  OS_PROJECT_NAME: admin
+  OS_USERNAME: admin
+  OS_PASSWORD: "{{ ADMIN_PASS }}" 
+  OS_AUTH_URL: http://controller:35357/v3
+  OS_IDENTITY_API_VERSION: 3
+  OS_IMAGE_API_VERSION: 2
+
+# Demo credentials
+DEMO_OPENRC: /var/lib/keystone/demo-openrc
+DEMO_CREDENTIALS:
+  OS_PROJECT_DOMAIN_NAME: Default
+  OS_USER_DOMAIN_NAME: Default
+  OS_PROJECT_NAME: demo
+  OS_USERNAME: demo
+  OS_PASSWORD: "{{ DEMO_PASS }}" 
+  OS_AUTH_URL: http://controller:5000/v3
+  OS_IDENTITY_API_VERSION: 3
+  OS_IMAGE_API_VERSION: 2

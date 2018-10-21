@@ -1,0 +1,130 @@
+---
+
+- name: Create the neutron database
+  mysql_db:
+    name: "{{ item }}"
+  with_items:
+    - neutron
+
+- name: Grant proper access to the neutron database
+  shell: "{{ item }}"
+  with_items:
+    - mysql --execute "GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' IDENTIFIED BY '{{ NEUTRON_DBPASS }}';"
+    - mysql --execute "GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' IDENTIFIED BY '{{ NEUTRON_DBPASS }}';"
+
+#- name: Create neutron user, service and service API
+#  shell: "{{ item }}"
+#  with_items:
+#    - 'openstack user create --domain default --password {{ NEUTRON_PASS }} neutron'
+#    - 'openstack role add --project service --user neutron admin'
+#    - 'openstack service create --name neutron --description "OpenStack Networking" network'
+#    - 'openstack endpoint create --region RegionOne network public http://{{ HOST_NAME }}:9696'
+#    - 'openstack endpoint create --region RegionOne network internal http://{{ HOST_NAME }}:9696'
+#    - 'openstack endpoint create --region RegionOne network admin http://{{ HOST_NAME }}:9696'
+#  environment: "{{ ADMIN_CREDENTIALS }}"
+
+# Install the self-service network
+
+- name: Install the components
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - neutron-server
+    - neutron-plugin-ml2
+    - neutron-linuxbridge-agent
+    - neutron-l3-agent
+    - neutron-dhcp-agent
+    - neutron-metadata-agent
+
+- name: Configure the neutron service
+  ini_file: 
+    path: /etc/neutron/neutron.conf
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ neutron_conf }}"
+    - attributes
+
+- name: Configure the ml2 plugin
+  ini_file:
+    path: /etc/neutron/plugins/ml2/ml2_conf.ini
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ ml2_conf }}"
+    - attributes
+
+- name: Remove type_drivers option for the ml2 section in the ml2_conf file
+  ini_file:
+    path: /etc/neutron/plugins/ml2/ml2_conf.ini
+    section: ml2
+    option: type_drivers
+    state: absent 
+
+- name: Configure the linux bridge agent
+  ini_file:
+    path: /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ linuxbridge_agent }}"
+    - attributes
+
+- name: Configure the layer3 agent
+  ini_file:
+    path: /etc/neutron/l3_agent.ini
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ l3_agent }}"
+    - attributes
+
+- name: Configure the linux dhcp agent
+  ini_file:
+    path: /etc/neutron/dhcp_agent.ini
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ dhcp_agent }}"
+    - attributes
+
+- name: Configure the metadata agent
+  ini_file:
+    path: /etc/neutron/metadata_agent.ini
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ metadata_agent }}"
+    - attributes
+    
+- name: Configure Nova to use Neutron service
+  ini_file:
+    path: /etc/nova/nova.conf
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ nova_conf }}"
+    - attributes
+
+- name: Populate the database
+  shell: "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head"
+  become_user: neutron
+
+- name: Restart services
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - nova-api
+    - neutron-server
+    - neutron-linuxbridge-agent
+    - neutron-dhcp-agent
+    - neutron-metadata-agent
+    - neutron-l3-agent

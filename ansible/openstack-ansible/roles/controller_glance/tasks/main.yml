@@ -1,0 +1,64 @@
+---
+
+# Create and configure glance database
+
+- name: Create the glance database
+  mysql_db:
+    name: glance
+
+- name: Grant proper access to the glance database
+  shell: "{{ item }}"
+  with_items:
+    - mysql --execute "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY '{{ GLANCE_DBPASS }}';"
+    - mysql --execute "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY '{{ GLANCE_DBPASS }}';"
+
+# Create glance user, service and service API
+
+- name: Create glance user, service and service API
+  shell: "{{ item }}"
+  with_items:
+    - 'openstack user create --domain default --password {{ GLANCE_PASS }} glance'
+    - 'openstack role add --project service --user glance admin'
+    - 'openstack service create --name glance --description "OpenStack Image" image'
+    - 'openstack endpoint create --region RegionOne image public http://{{ HOST_NAME }}:9292'
+    - 'openstack endpoint create --region RegionOne image internal http://{{ HOST_NAME }}:9292'
+    - 'openstack endpoint create --region RegionOne image admin http://{{ HOST_NAME }}:9292'
+  environment: "{{ ADMIN_CREDENTIALS }}"
+
+# Install and configure components
+
+- name: Install glance packages 
+  apt:
+    name: glance
+
+- name: Configure glance api services
+  ini_file:
+    path: /etc/glance/glance-api.conf 
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ glance_api }}"
+    - attributes
+
+- name: Configure Nova services
+  ini_file:
+    path: /etc/glance/glance-registry.conf
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ glance_registry }}"
+    - attributes
+
+- name: Populate the Image service database
+  shell: "glance-manage db_sync"
+  become_user: glance
+
+- name: Restart services
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - glance-registry
+    - glance-api

@@ -1,0 +1,21 @@
+---
+
+- name: Install Dashboard
+  apt:
+    name: openstack-dashboard
+
+- name: Template out the dashboard local config
+  template:
+    src: ../templates/local_settings.j2
+    dest: /etc/openstack-dashboard/local_settings.py
+    backup: yes
+
+- name: Add WSGIApplicationGroup
+  lineinfile:
+    path: /etc/apache2/conf-available/openstack-dashboard.conf
+    line: WSGIApplicationGroup %{GLOBAL}
+
+- name: Reload apache service
+  service:
+    name: apache2
+    state: reloaded

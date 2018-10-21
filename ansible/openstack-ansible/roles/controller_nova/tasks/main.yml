@@ -1,0 +1,88 @@
+---
+
+- name: Create the nova databases
+  mysql_db:
+    name: "{{ item }}"
+  with_items:
+    - nova_api
+    - nova
+    - nova_cell0
+
+- name: Grant proper access to the nova databases
+  shell: "{{ item }}"
+  with_items:
+    - mysql --execute "GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' IDENTIFIED BY '{{ NOVA_DBPASS }}';"
+    - mysql --execute "GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' IDENTIFIED BY '{{ NOVA_DBPASS }}';"
+    - mysql --execute "GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY '{{ NOVA_DBPASS }}';"
+    - mysql --execute "GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' IDENTIFIED BY '{{ NOVA_DBPASS }}';"
+    - mysql --execute "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' IDENTIFIED BY '{{ NOVA_DBPASS }}';"
+    - mysql --execute "GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' IDENTIFIED BY '{{ NOVA_DBPASS }}';"
+
+- name: Create nova user, service and service API
+  shell: "{{ item }}"
+  with_items:
+    - 'openstack user create --domain default --password {{ NOVA_PASS }} nova'
+    - 'openstack role add --project service --user nova admin'
+    - 'openstack service create --name nova --description "OpenStack Compute" compute'
+    - 'openstack endpoint create --region RegionOne compute public http://{{ HOST_NAME }}:8774/v2.1'
+    - 'openstack endpoint create --region RegionOne compute internal http://{{ HOST_NAME }}:8774/v2.1'
+    - 'openstack endpoint create --region RegionOne compute admin http://{{ HOST_NAME }}:8774/v2.1'
+    - 'openstack user create --domain default --password {{ PLACEMENT_PASS }} placement'
+    - 'openstack role add --project service --user placement admin'
+    - 'openstack service create --name placement --description "Placement API" placement'
+    - 'openstack endpoint create --region RegionOne placement public http://{{ HOST_NAME }}:8778'
+    - 'openstack endpoint create --region RegionOne placement internal http://{{ HOST_NAME }}:8778'
+    - 'openstack endpoint create --region RegionOne placement admin http://{{ HOST_NAME }}:8778'
+  environment: "{{ ADMIN_CREDENTIALS }}"
+
+- name: Install Nova packages
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - nova-api
+    - nova-conductor
+    - nova-consoleauth
+    - nova-novncproxy 
+    - nova-scheduler 
+    - nova-placement-api
+
+- name: Configure Nova services
+  ini_file:
+    path:  /etc/nova/nova.conf
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ nova_conf }}"
+    - attributes
+
+- name: Remove the log_dir option from DEFAULT section in file nova.conf
+  ini_file:
+    path: /etc/nova/nova.conf
+    section: DEFAULT
+    option: logdir
+    state: absent
+
+- name: Populate the nova-api database
+  shell: 'su -s /bin/sh -c "nova-manage api_db sync" nova'
+ 
+- name: Register the cell0 database
+  shell: 'su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova'
+
+- name: Create the cell1 cell 
+  shell: 'su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova'
+
+- name: Populate the nova database
+  shell: "nova-manage db sync"
+  become_user: nova
+- name: Restart services
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - nova-api 
+    - nova-consoleauth 
+    - nova-scheduler 
+    - nova-conductor 
+    - nova-novncproxy 
+

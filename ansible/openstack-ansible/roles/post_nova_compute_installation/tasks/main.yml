@@ -1,0 +1,4 @@
+---
+- name: Discover compute hosts
+  shell: "nova-manage cell_v2 discover_hosts --verbose"
+  become_user: nova

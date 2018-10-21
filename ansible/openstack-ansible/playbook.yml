@@ -1,0 +1,60 @@
+---
+
+- hosts: controller
+  remote_user: "{{ REMOTE_USER }}" 
+  become: yes
+  gather_facts: no
+  roles:
+    - controller_env
+
+- hosts: compute
+  remote_user: "{{ REMOTE_USER }}" 
+  become: yes
+  gather_facts: no
+  roles:
+    - compute_env
+
+- hosts: controller
+  remote_user: "{{ REMOTE_USER }}" 
+  become: yes
+  gather_facts: no
+  roles:
+    - controller_keystone
+    - controller_glance
+    - controller_nova
+
+- hosts: compute
+  remote_user: "{{ REMOTE_USER }}" 
+  become: yes
+  gather_facts: no
+  roles:
+    - compute_nova
+
+- hosts: controller
+  remote_user: "{{ REMOTE_USER }}" 
+  become: yes
+  gather_facts: no
+  roles:
+    - post_nova_compute_installation
+
+- hosts: controller
+  remote_user: "{{ REMOTE_USER }}" 
+  become: yes
+  gather_facts: no
+  roles:
+    - controller_neutron
+
+- hosts: compute
+  remote_user: "{{ REMOTE_USER }}" 
+  become: yes
+  gather_facts: no
+  roles:
+    - compute_neutron
+
+- hosts: controller
+  remote_user: "{{ REMOTE_USER }}" 
+  become: yes
+  gather_facts: no
+  roles:
+    - controller_horizon
+

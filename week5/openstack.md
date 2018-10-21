@@ -194,7 +194,7 @@ Như vậy, mạng default trên server cài đặt hai nodes có địa chỉ m
 *   Cấu hình interfaces cho controller:
 
     ```bash
-    auto ens7
+    auto ens9
             iface ens7 inet static
             address 10.0.0.10
             netmask 255.255.255.0

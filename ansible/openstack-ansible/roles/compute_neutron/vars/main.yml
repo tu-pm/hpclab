@@ -1,0 +1,69 @@
+---
+
+neutron_conf:
+  - name: DEFAULT
+    attributes:
+      - option: transport_url
+        value: 'rabbit://openstack:{{ RABBIT_PASS }}@controller'
+      - option: auth_strategy
+        value: keystone
+  - name: keystone_authtoken
+    attributes:
+      - option: auth_uri
+        value: http://controller:5000
+      - option: auth_url
+        value: http://controller:35357
+      - option: memcached_servers
+        value: controller:11211
+      - option: auth_type
+        value: password
+      - option: project_domain_name
+        value: default
+      - option: user_domain_name
+        value: default
+      - option: project_name
+        value: service
+      - option: username
+        value: neutron
+      - option: password
+        value: '{{ NEUTRON_PASS }}'
+linuxbridge_agent:
+  - name: linux_bridge
+    attributes:
+      - option: physical_interface_mappings
+        value: 'provider:{{ PROVIDER_INTERFACE_NAME }}'
+  - name: vxlan
+    attributes:
+      - option: enable_vxlan
+        value: true
+      - option: local_ip
+        value: '{{ OVERLAY_INTERFACE_IP_ADDRESS }}'
+      - option: l2_population
+        value: true
+  - name: securitygroup
+    attributes:
+      - option: enable_security_group
+        value: true
+      - option: firewall_driver
+        value: neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+nova_conf:
+  - name: neutron
+    attributes:
+      - option: url
+        value: http://controller:9696
+      - option: auth_url
+        value: http://controller:35357
+      - option: auth_type
+        value: password
+      - option: project_domain_name
+        value: default
+      - option: user_domain_name
+        value: default
+      - option: region_name
+        value: RegionOne
+      - option: project_name
+        value: service
+      - option: username
+        value: neutron
+      - option: password
+        value: '{{ NEUTRON_PASS }}'

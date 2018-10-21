@@ -1,0 +1,41 @@
+---
+
+- name: Install Nova packages
+  apt:
+    name: nova-compute 
+
+- name: Configure nova service
+  ini_file:
+    path: /etc/nova/nova.conf
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ nova_conf }}"
+    - attributes
+
+- name: Remove the log_dir option from DEFAULT section in file nova.conf
+  ini_file:
+    path: /etc/nova/nova.conf
+    section: DEFAULT
+    option: logdir
+    state: absent
+
+- name: Check if the host machine support hardware acceleration
+  shell: "egrep -c '(vmx|svm)' /proc/cpuinfo"
+  register: result
+  ignore_errors: True
+
+- name: Use libvirt qemu if result.stdout == 0
+  ini_file:
+    path: /etc/nova/nova-compute.conf
+    section: libvirt
+    option: virt_type
+    value: qemu
+  when: result.stdout == '0'
+
+- name: Restart services
+  service:
+    name: nova-compute
+    state: restarted
+

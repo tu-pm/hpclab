@@ -1,0 +1,101 @@
+---
+- name: Get the root privilege
+  command: 'mysql -u root""'
+
+- name: Create the keystone database
+  mysql_db:
+    name: keystone
+
+- name: Grant privileges for the keystone database
+  command: "{{ item }}" 
+  with_items:
+    - mysql --execute "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY '{{ KEYSTONE_DBPASS }}';"
+    - mysql --execute "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY '{{ KEYSTONE_DBPASS }}';"
+
+- name: Install required packages
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - keystone
+    - apache2
+    - libapache2-mod-wsgi
+
+- name: Configure Keystone service
+  ini_file:
+    path:  /etc/keystone/keystone.conf
+    section: "{{ item.0.name }}"
+    option: "{{ item.1.option }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ keystone_conf }}"
+    - attributes
+
+- name: Populate the Identity service database
+  shell: "keystone-manage db_sync"
+  become_user: keystone
+
+- name: Initialize Fernet key repositories
+  shell: "{{ item }}" 
+  with_items:
+    - keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+    - keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+
+- name: Bootstrap the Identity service
+  shell: "keystone-manage bootstrap --bootstrap-password {{ ADMIN_PASS }} \
+    --bootstrap-admin-url http://{{ HOST_NAME }}:35357/v3/ \
+    --bootstrap-internal-url http://{{ HOST_NAME }}:5000/v3/ \
+    --bootstrap-public-url http://{{ HOST_NAME }}:5000/v3/ \
+    --bootstrap-region-id RegionOne"
+
+- name: Configure ServerName 
+  lineinfile:
+    path: /etc/apache2/apache2.conf
+    line: "ServerName {{ inventory_hostname }}"
+    create: yes
+
+- name: Restart apache server
+  service:
+    name: apache2
+    state: restarted
+
+- name: Create OpenStack domain, projects and users
+  shell: "{{ item }}"
+  with_items:
+    - 'openstack project create --domain default --description "Service Project" service'
+    - 'openstack project create --domain default --description "Demo Project" demo'
+    - 'openstack user create --domain default --password "{{ DEMO_PASS }}" demo'
+    - 'openstack role create user'
+    - 'openstack role add --project demo --user demo user'
+  environment: "{{ ADMIN_CREDENTIALS }}"
+
+- name: Create admin-openrc script
+  lineinfile:
+    path: "{{ ADMIN_OPENRC }}" 
+    create: yes
+    mode: '774'
+    line: "{{ item }}"
+  with_items:
+    - 'export OS_PROJECT_DOMAIN_NAME=Default'
+    - 'export OS_USER_DOMAIN_NAME=Default'
+    - 'export OS_PROJECT_NAME=admin'
+    - 'export OS_USERNAME=admin'
+    - 'export OS_PASSWORD="{{ ADMIN_PASS }}"'
+    - 'export OS_AUTH_URL=http://{{ HOST_NAME }}:35357/v3'
+    - 'export OS_IDENTITY_API_VERSION=3'
+    - 'export OS_IMAGE_API_VERSION=2'
+
+- name: Create demo-openrc script
+  lineinfile:
+    path: "{{ DEMO_OPENRC }}" 
+    create: yes
+    mode: '774'
+    line: "{{ item }}"
+  with_items:
+    - 'export OS_PROJECT_DOMAIN_NAME=Default'
+    - 'export OS_USER_DOMAIN_NAME=Default'
+    - 'export OS_PROJECT_NAME=demo'
+    - 'export OS_USERNAME=demo'
+    - 'export OS_PASSWORD="{{ DEMO_PASS }}"'
+    - 'export OS_AUTH_URL=http://{{ HOST_NAME }}:5000/v3'
+    - 'export OS_IDENTITY_API_VERSION=3'
+    - 'export OS_IMAGE_API_VERSION=2'

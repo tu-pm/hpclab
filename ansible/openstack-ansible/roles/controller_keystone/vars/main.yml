@@ -1,0 +1,10 @@
+---
+keystone_conf:
+  - name: database
+    attributes:
+      - option: connection
+        value: 'mysql+pymysql://keystone:{{ KEYSTONE_DBPASS }}@controller/keystone'
+  - name: token
+    attributes:
+      - option: provider
+        value: fernet

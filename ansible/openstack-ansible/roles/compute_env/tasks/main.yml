@@ -1,0 +1,42 @@
+---
+
+# Install and configure Chrony
+
+- name: Install chrony
+  apt:
+    name: chrony
+    state: present
+
+- name: Configure iburst ntp server for compute node
+  lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: "^ server"
+    line: "server {{ CONTROLLER }} iburst"
+    backup: yes
+
+- name: Remove the pool 2.debian.pool.ntp.org offline iburst line
+  lineinfile:
+    path: /etc/chorny/chrony.conf
+    line: pool 2.debian.pool.ntp.org offline iburst
+    state: absent
+
+- name: Restart NTP service 
+  service:
+    name: chrony
+    state: restarted
+
+
+# Install and configure openstack Pike packages
+
+- name: Install software-properties-common
+  apt:
+    name: software-properties-common
+
+- name: Add Pike repository
+  command: "add-apt-repository cloud-archive:pike"
+
+- name: Install openstack client
+  apt:
+    name: python-openstackclient
+    update_cache: yes
+    state: latest
