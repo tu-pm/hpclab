@@ -102,7 +102,7 @@ Linux bridge cũng là một công cụ tạo bridge ảo nhanh và tin cậy đ
     ```
 
 -   Khởi động lại VMs và kiểm tra kết quả:
-    ![result](./images/resut.png)
+    ![result](./images/result.png)
 
 ## Other Notes
 
