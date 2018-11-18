@@ -79,7 +79,7 @@ Linux bridge cũng là một công cụ tạo bridge ảo nhanh và tin cậy đ
     ```
 -   Cấu hình mạng bridge cho hai VMs:
     -   Trên vm1:
-        ```xml
+    ```xml
     <interface type='bridge'>
       <source bridge='br0'/>
       <virtualport type='openvswitch'>
@@ -88,17 +88,17 @@ Linux bridge cũng là một công cụ tạo bridge ảo nhanh và tin cậy đ
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
-        ```
+    ```
     -   Trên vm2:
     ```xml
-        <interface type='bridge'>
-          <source bridge='br0'/>
-          <virtualport type='openvswitch'>
-          </virtualport>
-          <target dev='tap2'/>
-          <model type='virtio'/>
-          <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
-        </interface>
+    <interface type='bridge'>
+      <source bridge='br0'/>
+      <virtualport type='openvswitch'>
+      </virtualport>
+      <target dev='tap2'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </interface>
     ```
 
 -   Khởi động lại VMs và kiểm tra kết quả:
