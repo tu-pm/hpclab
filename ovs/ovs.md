@@ -115,15 +115,15 @@ Trong file này, mỗi port và bridge được cấu hình trong một "cụm" 
 -   port: cụm cấu hình bắt đầu bằng `allow-{bridge_name} {port_name}`.
 
 Các tham số cấu hình được hỗ trợ:
-    -   `ovs_type`: {*OVSBridge* - bridge, *OVSPort* - port, *OVSIntPort * - internal port, *OVSBond* - bond, *OVSPatchPort* - patch port, *OVSTunnel* - tunnel}
-    -   `ovs_ports`: Chỉ ra các ports gắn với bridge
-    -   `ovs_bridge`: Chỉ ra bridge gắn với port
-    -   `ovs_bonds`: Các interfaces vật lý được "gắn" với nhau
-    -   `ovs_patch_peer`: dùng cho patch ports, chỉ ra peer của patch trên bridge bên kia
-    -   `ovs_tunnel_type`: dùng cho tunnels, chỉ ra loại tunnel được dùng ("gre", "vxlan", ...)
-    -   `ovs_tunnel_options`: dùng cho tunnels, chỉ ra các tùy chọn của tunnel như remote_ip, key, ...
-    -   `ovs_option`
-    -   `ovs_extra`
+-   `ovs_type`: {*OVSBridge* - bridge, *OVSPort* - port, *OVSIntPort * - internal port, *OVSBond* - bond, *OVSPatchPort* - patch port, *OVSTunnel* - tunnel}
+-   `ovs_ports`: Chỉ ra các ports gắn với bridge
+-   `ovs_bridge`: Chỉ ra bridge gắn với port
+-   `ovs_bonds`: Các interfaces vật lý được "gắn" với nhau
+-   `ovs_patch_peer`: dùng cho patch ports, chỉ ra peer của patch trên bridge bên kia
+-   `ovs_tunnel_type`: dùng cho tunnels, chỉ ra loại tunnel được dùng ("gre", "vxlan", ...)
+-   `ovs_tunnel_options`: dùng cho tunnels, chỉ ra các tùy chọn của tunnel như remote_ip, key, ...
+-   `ovs_option`
+-   `ovs_extra`
 
 Các ví dụ cấu hình file `/etc/network/interfaces` có thể được tìm thấy ở [đây](https://github.com/openvswitch/ovs/blob/master/debian/openvswitch-switch.README.Debian)
 
