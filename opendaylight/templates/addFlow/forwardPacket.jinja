@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+{#
+  - description: IP forwarding function
+  - variables:
+    - table_id: Flow table ID
+    - flow_id: Flow ID
+    - ip_src: Source IP address
+    - ip_dest: Destination IP address
+    - out_conn: Output connector ID
+#}
+<flow xmlns="urn:opendaylight:flow:inventory">
+    <priority>2</priority>
+    <flow-name>Forward packets from {{ ip_src }} to {{ ip_dest }} through link {{ out_conn }}</flow-name>
+    <table_id>{{ table_id }}</table_id>
+    <id>{{ flow_id }}</id>
+    <match>
+        <ethernet-match>
+            <ethernet-type>
+                <type>2048</type>
+            </ethernet-type>
+        </ethernet-match>
+        {% if ip_src is not none %}
+        <ipv4-source>{{ ip_src }}</ipv4-source>
+        {% endif %}
+        {% if ip_dest is not none %}
+        <ipv4-destination>{{ ip_dest }}</ipv4-destination>
+        {% endif %}
+    </match>
+    <instructions>
+        <instruction>
+            <order>0</order>
+            <apply-actions>
+              <action>
+                <order>0</order>
+                <output-action>
+                  <output-node-connector>
+                    {{ out_conn }}
+                  </output-node-connector>
+                </output-action>   
+              </action>
+            </apply-actions>
+        </instruction>
+    </instructions>
+</flow>

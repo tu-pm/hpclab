@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+{#
+  - description: Forward ethernet frames based on source and destination MAC addresses
+  - variables:
+    - table_id: Flow table ID
+    - flow_id: Flow ID
+    - eth_src: Source MAC address
+    - eth_dest: Destination MAC address
+    - out_conn: Output connector to forward this packet
+#}
+<flow xmlns="urn:opendaylight:flow:inventory">
+    <priority>99</priority>
+    <flow-name>Forward packets sending from {{ eth_src }} to {{ eth_dest }} through connector {{ out_conn  }}</flow-name>
+    <table_id>{{ table_id }}</table_id>
+    {% if flow_id is not none %}
+    <id>{{ flow_id }}</id>
+    {% endif %}
+    <match>
+        <ethernet-match>
+          {% if eth_src is not none %}
+          <ethernet-source>
+            <address>{{ eth_src }}</address>
+          </ethernet-source>
+          {% endif %}
+          <ethernet-destination>
+            <address>{{ eth_dest }}</address>
+          </ethernet-destination>
+        </ethernet-match>
+    </match>
+    <instructions>
+        <instruction>
+            <order>0</order>
+            <apply-actions>
+              <action>
+                <order>0</order>
+                <output-action>
+                  <output-node-connector>
+                    {{ out_conn }}
+                  </output-node-connector>
+                </output-action>   
+              </action>
+            </apply-actions>
+        </instruction>
+    </instructions>
+</flow>

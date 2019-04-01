@@ -195,7 +195,7 @@ Như vậy, mạng default trên server cài đặt hai nodes có địa chỉ m
 
     ```bash
     auto ens9
-            iface ens7 inet static
+            iface ens9 inet static
             address 10.0.0.10
             netmask 255.255.255.0
 

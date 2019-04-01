@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+{#
+  - description: Drop packets based on source IP address
+  - variables:
+    - table_id: Flow table ID
+    - flow_id: Flow ID
+    - eth_src: Source IP address
+#}
+<flow xmlns="urn:opendaylight:flow:inventory">
+    <priority>2</priority>
+    <flow-name>Drop packets from {{ eth_src }}</flow-name>
+    <table_id>{{ table_id }}</table_id>
+    <id>{{ flow_id }}</id>
+    <match>
+        <ethernet-match>
+          <ethernet-source>
+            <address>{{ eth_src }}</address>
+          </ethernet-source>
+        </ethernet-match>
+    </match>
+    <instructions>
+        <instruction>
+            <order>0</order>
+            <apply-actions>
+              <action>
+                <order>0</order>
+                <drop-action/>
+              </action>
+            </apply-actions>
+        </instruction>
+    </instructions>
+</flow>
