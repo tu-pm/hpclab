@@ -79,7 +79,7 @@ Linux bridge cũng là một công cụ tạo bridge ảo nhanh và tin cậy đ
     ```
 -   Cấu hình mạng bridge cho hai VMs:
     -   Trên vm1:
-        ```xml
+    ```xml
     <interface type='bridge'>
       <source bridge='br0'/>
       <virtualport type='openvswitch'>
@@ -88,21 +88,21 @@ Linux bridge cũng là một công cụ tạo bridge ảo nhanh và tin cậy đ
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
-        ```
+    ```
     -   Trên vm2:
     ```xml
-        <interface type='bridge'>
-          <source bridge='br0'/>
-          <virtualport type='openvswitch'>
-          </virtualport>
-          <target dev='tap2'/>
-          <model type='virtio'/>
-          <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
-        </interface>
+    <interface type='bridge'>
+      <source bridge='br0'/>
+      <virtualport type='openvswitch'>
+      </virtualport>
+      <target dev='tap2'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </interface>
     ```
 
 -   Khởi động lại VMs và kiểm tra kết quả:
-    ![result](./images/resut.png)
+    ![result](./images/result.png)
 
 ## Other Notes
 
@@ -115,15 +115,15 @@ Trong file này, mỗi port và bridge được cấu hình trong một "cụm" 
 -   port: cụm cấu hình bắt đầu bằng `allow-{bridge_name} {port_name}`.
 
 Các tham số cấu hình được hỗ trợ:
-    -   `ovs_type`: {*OVSBridge* - bridge, *OVSPort* - port, *OVSIntPort * - internal port, *OVSBond* - bond, *OVSPatchPort* - patch port, *OVSTunnel* - tunnel}
-    -   `ovs_ports`: Chỉ ra các ports gắn với bridge
-    -   `ovs_bridge`: Chỉ ra bridge gắn với port
-    -   `ovs_bonds`: Các interfaces vật lý được "gắn" với nhau
-    -   `ovs_patch_peer`: dùng cho patch ports, chỉ ra peer của patch trên bridge bên kia
-    -   `ovs_tunnel_type`: dùng cho tunnels, chỉ ra loại tunnel được dùng ("gre", "vxlan", ...)
-    -   `ovs_tunnel_options`: dùng cho tunnels, chỉ ra các tùy chọn của tunnel như remote_ip, key, ...
-    -   `ovs_option`
-    -   `ovs_extra`
+-   `ovs_type`: {*OVSBridge* - bridge, *OVSPort* - port, *OVSIntPort * - internal port, *OVSBond* - bond, *OVSPatchPort* - patch port, *OVSTunnel* - tunnel}
+-   `ovs_ports`: Chỉ ra các ports gắn với bridge
+-   `ovs_bridge`: Chỉ ra bridge gắn với port
+-   `ovs_bonds`: Các interfaces vật lý được "gắn" với nhau
+-   `ovs_patch_peer`: dùng cho patch ports, chỉ ra peer của patch trên bridge bên kia
+-   `ovs_tunnel_type`: dùng cho tunnels, chỉ ra loại tunnel được dùng ("gre", "vxlan", ...)
+-   `ovs_tunnel_options`: dùng cho tunnels, chỉ ra các tùy chọn của tunnel như remote_ip, key, ...
+-   `ovs_option`
+-   `ovs_extra`
 
 Các ví dụ cấu hình file `/etc/network/interfaces` có thể được tìm thấy ở [đây](https://github.com/openvswitch/ovs/blob/master/debian/openvswitch-switch.README.Debian)
 
