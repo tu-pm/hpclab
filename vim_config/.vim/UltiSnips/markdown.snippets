@@ -1,0 +1,259 @@
+priority -50
+
+global !p
+
+def create_table(snip):
+    # retrieving single line from current string and treat it like tabstops count
+    placeholders_string = snip.buffer[snip.line].strip()[2:].split("x",1)
+    rows_amount = int(placeholders_string[0])
+    columns_amount = int(placeholders_string[1])
+
+    # erase current line
+    snip.buffer[snip.line] = ''
+
+    # create anonymous snippet with expected content and number of tabstops
+    anon_snippet_title = ' | '.join(['$' + str(col) for col in range(1,columns_amount+1)]) + "\n"
+    anon_snippet_delimiter = ':-|' * (columns_amount-1) + ":-\n"
+    anon_snippet_body = ""
+    for row in range(1,rows_amount+1):
+        anon_snippet_body += ' | '.join(['$' + str(row*columns_amount+col) for col in range(1,columns_amount+1)]) + "\n"
+    anon_snippet_table = anon_snippet_title + anon_snippet_delimiter + anon_snippet_body
+
+    # expand anonymous snippet
+    snip.expand_anon(anon_snippet_table)
+
+def create_toc(path):
+	toc = "## Table of Contents\n\n"
+	markers = ['## ', '### ', '#### ']
+
+	tags = dict()
+
+	lines = open(path, 'r').readlines()[1:]
+
+	for line in lines:
+			x = -1
+			for i in range(len(markers)):
+					if markers[i] == line[:i + 3]:
+							x = i
+							break
+			if x != -1:
+
+					# Ignore the heading markers
+					line = line[x+3:-1]
+
+					# Remove html tags
+					tag = re.compile('\<.*?\>').sub('', line.lower())
+
+					# Keep all alphabetic, numeric and spaces, wipe out the rest
+					tag = re.compile('[^àáảãạăắằẵặẳâầấậẫẩđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵa-zA-Z0-9\s\_\-]').sub('', tag)
+
+					# Remove all leading and trailing spaces
+					tag = tag.strip()
+					
+					# Replace spaces with '-'
+					tag = re.sub(' ', '-', tag)
+
+					# Check if tag is existed
+					if tag in tags.keys():
+							tags[tag] += 1
+							tag = tag + '-' + str(tags[tag])
+					else:
+							tags[tag] = 0
+					
+					toc = toc + '\t'*x + '*   ' + \
+							'['+line+']' + '(#user-content-' + tag + ')\n'
+
+	return toc
+endglobal
+
+###########################
+#         Headings        #
+###########################
+
+snippet toc "Add TOC" b
+`!p snip.rv = create_toc(path)` $0
+endsnippet
+
+###########################
+#         Headings        #
+###########################
+
+snippet h "Heading 1" b
+# ${1} 
+$0
+endsnippet
+
+snippet hh "Heading 2" b
+## ${1} 
+$0
+endsnippet
+
+snippet hhh "Heading 3" b
+### ${1} 
+$0
+endsnippet
+
+###########################
+#        Code Blocks      #
+###########################
+
+snippet cbl "Codeblock" b
+\`\`\`
+$1
+\`\`\`
+$0
+endsnippet
+
+snippet xml "XML Block" b
+\`\`\`xml
+$1
+\`\`\`
+$0
+endsnippet
+
+snippet py "Python Block" b
+\`\`\`python
+$1
+\`\`\`
+$0
+endsnippet
+
+snippet sh "Bash Shell Block" b
+\`\`\`bash
+$1
+\`\`\`
+$0
+endsnippet
+
+snippet php "PHP Block" b
+\`\`\`php
+$1
+\`\`\`
+$0
+endsnippet
+
+snippet js "JS Block" b
+\`\`\`javascript
+$1
+\`\`\`
+$0
+endsnippet
+
+snippet html "Html Block" b
+\`\`\`html
+$1
+\`\`\`
+$0
+endsnippet
+
+snippet sql "SQL Block" b
+\`\`\`sql
+$1
+\`\`\`
+$0
+endsnippet
+###########################
+# Sections and Paragraphs #
+###########################
+snippet sec "Section" b
+# ${1:Section Name} #
+$0
+endsnippet
+
+snippet ssec "Sub Section" b
+## ${1:Section Name} ##
+$0
+endsnippet
+
+snippet sssec "SubSub Section" b
+### ${1:Section Name} ###
+$0
+endsnippet
+
+snippet par "Paragraph" b
+#### ${1:Paragraph Name} ####
+$0
+endsnippet
+
+snippet spar "Paragraph" b
+##### ${1:Paragraph Name} #####
+$0
+endsnippet
+
+###################
+# Text formatting #
+###################
+
+
+snippet tex "latex formula"
+\$\$${1:${VISUAL}}\$\$$0
+endsnippet
+
+snippet sup "superscription"
+<sup>${1:${VISUAL}}</sup> $0
+endsnippet
+
+snippet sub "subscription"
+<sub>${1:${VISUAL}}</sub> $0
+endsnippet
+
+snippet i "italics"
+*${1:${VISUAL}}* $0
+endsnippet
+
+snippet b "bold"
+**${1:${VISUAL}}** $0
+endsnippet
+
+snippet c "inline code"
+\`${1:${VISUAL}}\` $0
+endsnippet
+
+snippet bi "bold italics"
+***${1:${VISUAL}}*** $0
+endsnippet
+
+snippet bc "bold code"
+**\`${1:${VISUAL}}\`** $0
+endsnippet
+
+
+################
+# Common stuff #
+################
+snippet a "Link to something"
+[${1:${VISUAL:Text}}](${3:http://${2:www.url.com}})$0
+endsnippet
+
+snippet img "Default Image"
+![${1:pic alt}](${2:path}${3/.+/ "/}${3:opt title}${3/.+/"/})$0
+endsnippet
+
+snippet img "Center Aligned Image"
+<p align="center" style="text-align: center">
+	<img src="$1" alt="$2" width="500" height="500"/>
+</p>
+$0
+endsnippet
+
+snippet ilc "Inline Code" i
+\`$1\`$0
+endsnippet
+
+snippet refl "Reference Link"
+[${1:${VISUAL:Text}}][${2:id}]$0
+
+[$2]:${4:http://${3:www.url.com}} "${5:$4}"
+endsnippet
+
+snippet fnt "Footnote"
+[^${1:${VISUAL:Footnote}}]$0
+
+[^$1]:${2:Text}
+endsnippet
+
+pre_expand "create_table(snip)"
+snippet "tb(\d+x\d+)" "Customizable table" br
+endsnippet
+
+# vim:ft=snippets:
