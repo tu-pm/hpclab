@@ -47,8 +47,8 @@ def create_toc(path):
 					# Keep all alphabetic, numeric and spaces, wipe out the rest
 					tag = re.compile('[^àáảãạăắằẵặẳâầấậẫẩđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵa-zA-Z0-9\s\_\-]').sub('', tag)
 
-					# Remove all leading and trailing spaces
-					tag = tag.strip()
+					# Normalize white spaces
+					tag = " ".join(tag.split())
 					
 					# Replace spaces with '-'
 					tag = re.sub(' ', '-', tag)
