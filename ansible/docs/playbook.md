@@ -111,7 +111,7 @@ Mỗi play gồm một danh sách các tasks. Các tasks được thực thi l�
 
 Mỗi task có mục đích là thực thi một module nào đó với các tham số cụ thể. Các tham số này có thể được truyền trực tiếp hoặc truyền từ danh sách biến định nghĩa trước.
 
-Các module là **indempotent**, nếu ta đã chạy một module nào đó và đạt được trạng thái mong muốn rồi thì yêu cầu chạy lại nó với danh sách tham số cũ sẽ không được thực hiện.
+Các module là **idempotent**, nếu ta đã chạy một module nào đó và đạt được trạng thái mong muốn rồi thì yêu cầu chạy lại nó với danh sách tham số cũ sẽ không được thực hiện.
 
 Mỗi task nên có một tên cụ thể. Tên này được được hiển thị ra trong output của playbook. Bởi thế, nên đặt tên dễ hiểu và mô tả chính xác công việc mà task thực hiện.
 
