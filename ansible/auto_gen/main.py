@@ -28,7 +28,7 @@ GLOBAL_VARS = {
 }
 
 OTHER_VARS = {
-	'controller': 'HOST_NAME',
+    'controller': 'HOST_NAME',
     '10.0.0.11': 'PRIVATE_ADDRESS',
     '10.0.0.0/24': 'PRIVATE_NETWORK',
 }
@@ -75,25 +75,25 @@ def ini_file(name, path, yaml_dict_name):
 - name: {}
   ini_file:
     path: {}
-    section: "{{{{ item.0.name }}}}"
-    option: "{{{{ item.1.option }}}}"
-    value: "{{{{ item.1.value }}}}"
+    section: "\{\{ item.0.name \}\}"
+    option: "\{\{ item.1.option \}\}"
+    value: "\{\{ item.1.value \}\}"
     backup: yes
   with_subelements:
-    - " {{{{ {} }}}}"
+    - " \{\{ {} \}\}"
     - attributes
 	'''
 	return res.format(name, path, yaml_dict_name)
 
 def apt(package_file, name, state='present'):
-	res = '- name: {}\n  apt:\n    name: "{{{{ item }}}}"\n    state: {}\n  with_items:'
+	res = '- name: {}\n  apt:\n    name: "\{\{ item \}\}"\n    state: {}\n  with_items:'
 	res = [res.format(name, state)]
 	for pkg in readlines(package_file):
 		res.append('    - {}'.format(pkg))
 	return '\n'.join(res)
 
 def shell(command_file, name, sql=False, environment=None):
-	res = '- name: {}\n  shell: "{{{{ item }}}}"\n  with_items:'
+	res = '- name: {}\n  shell: "\{\{ item \}\}"\n  with_items:'
 	res = [res.format(name)]
 	for command in readlines(command_file):
 		if sql:
