@@ -1,65 +1,47 @@
+
 # Ansible Documentation
-
-## Overview
-
+> Tài liệu này giới thiệu về Ansible, cách thức cài đặt cũng như cách sử dụng các tính năng cơ bản của nó thông qua các công cụ dòng lệnh. 
+## Tổng quan
 Ansible là một công cụ tự động hóa hoàn toàn các hoạt động cung cấp tài nguyên tính toán đám mây, quản lý các thao tác cấu hình, triển khai ứng dụng và quản lý nội dịch vụ.
 
-Được thiết kế để hỗ trợ mô hình triển khai đa pha, Ansible mô hình hóa hạ tầng công nghệ thông tin bằng cách mô tả cách thức các hệ thống dưới góc nhìn tổng quan, thay vì xem xét từng hệ thống một cách riêng lẻ.
+Một cách cơ bản, Ansible thực hiện cài đặt hoặc cấu hình dịch vụ trên máy chủ từ xa bằng cách mở một kết nối SSH tới server, thực thi các thủ tục cài đặt cần thiết trên server rồi đóng kết nối. Tất cả các thao tác này được thực hiện một cách tự động thông qua một kịch bản (playbook) được định nghĩa trước.
 
-Ansible có thể dễ dàng được triển khai bằng cách sử dụng ngôn ngữ YAML để mô tả các công việc tự động hóa.
+Các tính chất cơ bản của Ansible bao gồm:
+- Đơn giản, dễ sử dụng
+- Tin cậy, độ bảo mật cao
+- *Không sử dụng agent*: Không cần cài đặt agents trên remote servers, giảm tối thiểu chi phí cài đặt và bảo trì
+- Modules đa dạng: Hỗ trợ hơn 400 modules, là những chương trình con mà ansible hỗ trợ thực thi trên server, thực hiện những nhiệm vụ cơ bản như quản lý file, quản lý dịch vụ hay cài đặt packages
 
-Phần này giới thiệu về những đặc trưng cơ bản nhất của Ansible.
+## Các khái niệm cơ bản
 
-### Efficient Architecture
-
-Ansible hoạt động bằng cách kết nối các nodes và đẩy vào chúng các chương trình nhỏ có tên "Ansible modules". Các chương trình này là các mẫu tài nguyên để xây dựng trạng thái mong muốn của cả hệ thống. Ansible sau đó thực thi các modules này (thông qua SSH) và gỡ bỏ nó sau khi hoàn thành.
-
-Thư viện của các modules này có thể nằm trên bất kỳ đâu mà không cần đến một server, daemon hay CSDL nào. Thông thường, bạn chỉ cần thao tác trên terminal, trên một chương trình soạn thảo và một hệ thống version control là đủ.
-
-### SSH Keys
-
-SSH keys là phương thức bảo mật được ưa chuộng bởi Ansible. Module "authorized_key" giúp người dùng quản lý được các machine nào được truy cập host nào. Bên cạnh SSH, các phương thức như kerberos và các hệ thống quản lý danh tính khác cũng có thể được sử dụng.
 
 ### Manage Your Inventory in Simple Text Files
 
 Theo mặc định, Ansible mô tả những machines mà nó quản lý sử dụng một file `*.ini` đơn giản gom chúng chung vào một nhóm. Để có thể thêm một machine mới, ta chỉ việc thêm chúng vào file này. Các dữ liệu từ nguồn khác như EC2, RACKspace hay OpenStack cũng có thể được kéo về sử dụng dynamic inventory.
 
-## Installation, Upgrade and Configuration
+## Cài đặt và cấu hình
 
-### Installation
+### Yêu cầu 
+- Control node: Chạy các hệ điều hành Linux/Unix phổ biến, có cài đặt Python 2.7 hoặc 3.5+, và có khả năng kết nối tới các máy chủ được quản lý (managed nodes)
+- Managed nodes: Có cài đặt OpenSSH server, Python 2.7 hoặc 3.5+
 
-Ansible hoạt động sử dụng SSH, tức là ta có thể cài đặt nó trên một máy và dùng nó điều khiển cả một hệ thống khác từ xa thông qua SSH. Các phiên bản hiện tại của Ansible có thể hoạt động trên bất kỳ máy nào có cài đặt Python (2.6, 2.7 hoặc >= 3.5). Trên nút điều khiển, ta cần có một phương thức để giao tiếp thông qua ssh, theo mặc định nó có thể là `sftp` hoặc `scp`.
+*Chú ý*: Hiện tại, ansible vẫn sử dụng Python 2.7 theo mặc định. Để yêu cầu Ansible sử dụng Python 3, ta cần thêm cấu hình `ansible_python_interpreter` trong file inventory
 
-Chú ý, trình thông dịch mặc định được sử dụng bởi ansible là `/usr/bin/python`. Nếu một hệ thống chỉ sử dụng python3, ta có thể gặp phải lỗi giống như sau:
+### Cài đặt
+Cách thức cài đặt ansible trên các phiên bản hệ điều hành khác nhau được cập nhật trong tài liệu [này]([https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html))
 
-    "module_stdout": "/bin/sh: /usr/bin/python: No such file or directory\r\n"
-
--> Ta cần sửa thao số `ansible_python_interpreter` trỏ vào thư mục `/usr/bin/python3` để sử dụng trình thông dịch python3.
-
-#### Installing the Control Machine
-
-Trên Ubuntu:
-
-    ```bash
-    $ sudo apt-get update
-    $ sudo apt-get install software-properties-common
-    $ sudo apt-add-repository ppa:ansible/ansible
-    $ sudo apt-get update
-    $ sudo apt-get install ansible
-    ```
-### Configuring Ansible
-
+### Cấu hình
 #### Configuration Files
-
-Các thao tác cài đặt Ansible có thể được thay đổi thông qua một file cấu hình (`ansible.cfg`). Sau khi cài đặt ansible, file cấu hình mới nhất của nó có thể được đặt trong thư mục `/etc/ansible` với định dạng `.rpmnew`.
+Đường dẫn file cấu hình của Ansible thường nằm tại các địa chỉ:
+- `./ansible.cfg`
+- `~/ansible.cfg`
+- `/etc/ansible/ansible.cfg`
 
 #### Environmental Configuration
-
-Ansible cũng cho phép cấu hình các cài đặt sử dụng các biến môi trường. Nếu các biến này được đặt, chúng sẽ override các cài đặt có sẵn.
+Có thể cấu hình Ansible sử dụng biến môi trường `ANSIBLE_CONFIG` để ghi đè các cấu hình trong file.
 
 #### Command Line Options
-
-Ta cũng có thể thay đổi cấu hình cài đặt thông qua hệ thống dòng lệnh
+Một vài cấu hình có thể được ghi đè thông qua câu lệnh `ansible` hoặc `ansible-playbook`
 
 ## Getting Started
 
@@ -67,7 +49,7 @@ Ta cũng có thể thay đổi cấu hình cài đặt thông qua hệ thống d
 
 Trong một vài trường hợp hiếm gặp khi thiết bị từ xa không hỗ trợ SFTP, ta có thể cấu hình Ansible sử dụng SCP mode thay thế.
 
-Khi giao tiếp với các máy từ xa, Ansible mặc định sử dụng SSH keys. Nếu muốn sử dụng mật khẩu, ta cần thêm các option như `--ask-pass` hay `--ask-become-pass` để lấy mật khẩu và mật khẩu root truy cập remote machine.
+Khi giao tiếp với các máy từ xa, Ansible mặc định sử dụng SSH keys. Nếu muốn sử dụng mật khẩu, ta cần thêm các option như `--ask-pass` hay `--ask-become-pass` để nhập mật khẩu để truy cập remote machine.
 
 ### Basic Operations
 
@@ -129,10 +111,10 @@ Nội dung phần này chỉ ra các thành phần của một ansible inventory
         jumper ansible_port=5555 ansible_host=192.168.2.2
 
 *   Chỉ định người dùng cụ thể để SSH đến:
-
-       # HOSTNAME ansible_user=USER_NAME
-        192.168.122.123 ansible_user=tupham
-
+	```
+	# HOSTNAME ansible_user=USER_NAME
+	192.168.122.123 ansible_user=tupham
+	```
 *   Liệt kê hostname theo pattern:
 
         www[01:50].example.com
@@ -192,13 +174,11 @@ Nội dung phần này chỉ ra các thành phần của một ansible inventory
 
 ### Default Groups
 
-Có hai group mặc định là `all` và `ungrouped`. `all` chứa tất cả các host, `ungrouped` chứa tất cả các host không có group nào khác ngoài `all`.
-
--> Tất cả các host đều thuộc ít nhất 2 group
+Có hai group mặc định là `all` và `ungrouped`. `all` chứa tất cả các host, `ungrouped` chứa tất cả các host không có group nào khác ngoài `all`. 
+=> Mọi hosts đều thuộc ít nhất 02 groups.
 
 ### Some Conventions
-
-*   Không chứa biến trong inventory files
+*   Không lưu biến trong inventory files
 *   Danh sách biến của mỗi group hay host nên chứa trong các file riêng biệt, theo định dạng YAML hay JSON:
 
         # inventory file
@@ -219,20 +199,13 @@ Có hai group mặc định là `all` và `ungrouped`. `all` chứa tất cả c
 
 ### Merging Variables
 
-Các biến trùng tên định nghĩa ở mức trừu tượng hơn sẽ bị ghi đè bởi mức cụ thể hơn theo thứ tự:
+Các biến trùng tên định nghĩa ở mức tổng quát sẽ bị ghi đè bởi mức cụ thể hơn theo thứ tự:
 
-    all group-> parent group -> child group -> host
+    all group -> parent group -> child group -> host
 
 ### Ansible Variables
 
-Danh sách các biến điều khiển quá trình hoạt động của ansible nằm ở [đây](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#list-of-behavioral-inventory-parameters)
-
-### Non SSH Connection Types
-
-Bên cạnh SSH, Ansible còn quản lý hoạt động của hosts theo các kiểu giao tiếp sau:
-
-*   local: Quản lý thao tác trên chính nút kiểm soát
-*   docker: Quản lý các Docker containers sử dụng Docker client cục bộ
+Danh sách các biến điều khiển cho các hoạt động của ansible nằm ở [đây](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters)
 
 ## Working with Command Line Tools
 
@@ -251,102 +224,80 @@ ansible-vault  |  Công cụ mã hóa của ansible
 
 ## Using Adhoc Commands
 
-Ad-hoc Commands là công cụ giúp ta thực thi những tasks đơn giản một cách tại chỗ mà không cần lưu lại.
+Ad-hoc commands là các công cụ giúp ta thực thi những tasks đơn giản một cách tại chỗ trên dòng lệnh mà không cần định nghĩa trong các file playbooks. Dưới đây là một vài trường hợp thường dùng adhoc commands:
 
-Các mục dưới đây đề cập đến các ca sử dụng mà ad-hoc commands có thể xử lý rất tốt.
+### Các thủ tục cơ bản
 
-### Paralellism and Shell Commands
+- Chạy thủ tục trong nhiều luồng (mỗi luồng chạy trên một host) sử dụng chỉ thị `-f` :
+	```
+	 # reboot all hosts 10 at a time
+	 ansible all -a 'reboot' -f 10 
+	```
+- Chạy module sử dụng chỉ thị `-m`:
+	```
+	# ping all hosts
+	ansible all -m ping
+	```
+- Chạy thủ tục một cách bất đồng bộ sử dụng chỉ thị `-B`, chỉ định thời gian định kỳ in ra kết quả chỉ thị `-P`:
+	```
+	# prediocally reading log file each 10 seconds
+	ansible all -m command -a "tailf /var/log/somefile.log" -B -P 10
+	```
+-  Chạy một shell command trên servers:
+	```
+	# Print terminal emulator
+	ansible all -m shell -a 'echo $TERM'
+	```	
+### Quản lý files
 
-*   Thực hiện một tác vụ nào đó trên tất cả các host trong một group với số tiến trình song song ( = số host cùng lúc chạy tác vụ) chỉ định:
-
-        # ansible GROUP_NAME -a 'COMMAND' -f N_PROCESSES
-        ansible atlanta -a 'reboot' -f 10 #reboot all hosts in atlanta group 10 at a time
-
-*   Các chỉ thị liên quan tới user trên remote host:
-    *   `-u foo`: Chạy lệnh với tư cách của người dùng `foo`, tương đương với lệnh `sudo -u foo`
-    *   `--become-user`: Trở thành người dùng `foo` trước khi chạy câu lệnh, tương đương với lệnh `su - foo`
-    *   `--ask-become-pass`: Hiển thị ô nhập mật khẩu (nếu cần), sử dụng kèm với chỉ thị `--become-user`
-    *   `--become`: Trở thành root, tương tự `su -`
-
-*   Chạy một ansible module:
-    *   Dùng chỉ thị `-m` để chỉ ra module nào cần chạy, mặc định là `command`
-
-        ansible atlanta -m ping
-
-    *   `shell` vs `command` module
-        *   Cùng dùng để chạy lệnh trên remote hosts
-        *   `shell` hỗ trợ các cú pháp như piping hay chuyển hướng, các cú pháp shell-like, command thì không
-
-### File Transfer
-
-*   Copy một file cục bộ tới các remote hosts với module `copy`:
-
-        ansible atlanta -m copy -a "src=<source_file> dest=<destination>"
-
-*   Thay đổi quyền đối với files bằng module `file`:
-
-        ansible atlanta -m file -a "dest=/tmp/abc mode=600 owner=tupham group=developers"
-
-*   Module `file` cũng dùng để tạo mới hay xóa file trên remote hosts
-
-### Managing Packages
+-  Copy file tới remote hosts sử dụng module `copy`:
+	```
+	ansible all -m copy -a "src=/root/.bashrc dest=/root/.bashrc"
+	```
+*   Thay đổi quyền cho files sử dụng module `file`:
+	```
+	ansible all -m file -a "path=/tmp/abc mode=600 owner=tupham group=developers"
+	```
+*   Xóa file sử dụng module `file`:
+	```
+	ansible all -m file -a "path=/tmp/abc state=absent"
+	```
+### Quản lý Packages
 
 *   Dùng `yum` hay `apt` để quản lý các gói phần mềm trên remote hosts
-
+	```
+	# Install latest version of mysql server
+	ansible all -m apt -a "name=mysql-server"
+	```
 *   Kiểm tra package đang ở phiên bản mới nhất:
-
-        ansible atlanta -m apt -a "name=vim state=lastest"
-
+	```
+	ansible all -m apt -a "name=vim state=latest"
+	```
 *   Kiểm tra package có ở phiên bản chỉ định không:
-
-        ansible atlanta -m apt -a "name=acme-1.5 state=present"
-
+	```
+	ansible all -m apt -a "name=acme-1.5 state=present"
+	```
 *   ...
-
 ### Deploying From Source Control
 
 *   Triển khai một ứng dụng trực tiếp một git repo bằng module `git`:
-
-        ansible atlanta -m git -a "repo=<git-repo> dest=<placement> version=HEAD"
-
-### Managing Services
-
-*   Quản lý một dịch vụ nào đó trên remote hosts bằng module `service`
-
-*   Chạy một dịch vụ nào đó:
-
-        ansible atlanta -m service -a "name=httpd state=started"
-
+	```
+	ansible all -m git -a "repo=<git-repo> dest=<placement> version=HEAD"
+	```
+### Quản lý dịch vụ
+*   Khởi động dịch vụ:
+	```
+	ansible all -m service -a "name=httpd state=started"
+	```
 *   Khởi động lại dịch vụ:
-
-        ansible atlanta -m service -a "name=httpd state=restarted"
-
+	```
+	ansible all -m service -a "name=httpd state=restarted"
+	```
 *   Ngừng dịch vụ:
-
-        ansible atlanta -m service -a "name=httpd state=stopped"
-
-### Time Limited Background Operation
-
-*   Có thể chỉ định một lệnh chạy bất đồng bộ trên background:
-
-*   Dùng chỉ thị `-B <timeout>` để yêu cầu một lệnh chạy ngầm với khoảng thời gian tối đa là `timeout`:
-
-        ansible all -B 3600 -a "some command here..."
-
-*   Dùng chỉ thị `-P n_secs` để kiểm tra trạng thái lệnh chạy ngầm sau `n_secs` giây
-
-        ansible all -B 3600 -P 60 -a "some command here"
-
-*   Cũng có thể kiểm tra trạng thái lệnh bằng module `async_status`
-
-### Gathering Facts:
-
-*   Lấy về facts (các thông tin định nghĩa playbook) cho các hosts:
-
-        ansible all -m setup
+	```
+	ansible all -m service -a "name=httpd state=stopped"
+	```
 
 ## Working with Playbooks
 
-Playbooks là ngôn ngữ cấu hình, triển khai và điều phối hệ thống từ xa của Ansible. Nó có thể được dùng để mô tả các chính sách mà hệ thống từ xa phải đảm bảo hoặc là các bước trong một quy trình IT nào đó.
-
-Tìm hiểu về Playbook là tìm hiểu một ngôn ngữ hoàn toàn mới với nhiều cú pháp và quy trình khác nhau, bởi vậy nội dung này sẽ được viết trong một tài liệu hoàn toàn mới.
+Playbooks là ngôn ngữ cấu hình, triển khai và điều phối hệ thống từ xa của Ansible. Mỗi tài liệu playbook định nghĩa ra một danh sách các thủ tục sẽ lần lượt được thực thi trên server. Cách thức định nghĩa và quy trình triển khai ansible playbooks được giới thiệu trong tài liệu [này](./playbook.md)
