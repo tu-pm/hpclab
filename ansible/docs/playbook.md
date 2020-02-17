@@ -1,13 +1,9 @@
+
 # Ansible Playbook Documentation
-
-Playbooks là ngôn ngữ cấu hình, triển khai và điều phối hệ thống từ xa của Ansible. Nó có thể được dùng để mô tả các chính sách yêu cầu đối với hệ thống từ xa hay các bước trong một quy trình IT nào đó.
-
-Tài liệu này tập trung giới thiệu về cú pháp, cách dùng và một số ví dụ của Playbook.
+> Tài liệu này giới thiệu về Ansible Playbook cũng như cách thức định nghĩa và chạy một kịch bản sử dụng playbook.
 
 ## Intro to Playbook
-
 ### Playbook Language Example
-
 Playbooks được thể hiện bằng cú pháp YAML.
 
 Mỗi playbook chứa một danh sách gồm nhiều 'plays'. Mỗi `play` có chức năng kết nối một tập các hosts với các vai trò định trước, thao tác này được thể hiện trong các "tasks". Mỗi `task` là một lời gọi đến một ansible module.
@@ -217,4 +213,3 @@ roles/
      defaults/
      meta/
 ```
-
