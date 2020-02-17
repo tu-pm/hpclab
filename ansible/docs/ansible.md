@@ -1,4 +1,5 @@
 
+  
 # Ansible Documentation
 > Tài liệu này giới thiệu về Ansible, cách thức cài đặt cũng như cách sử dụng các tính năng cơ bản của nó thông qua các công cụ dòng lệnh. 
 ## Tổng quan
@@ -14,16 +15,18 @@ Các tính chất cơ bản của Ansible bao gồm:
 
 ## Các khái niệm cơ bản
 
-
-### Manage Your Inventory in Simple Text Files
-
-Theo mặc định, Ansible mô tả những machines mà nó quản lý sử dụng một file `*.ini` đơn giản gom chúng chung vào một nhóm. Để có thể thêm một machine mới, ta chỉ việc thêm chúng vào file này. Các dữ liệu từ nguồn khác như EC2, RACKspace hay OpenStack cũng có thể được kéo về sử dụng dynamic inventory.
+1. *Control node*: Là một máy tính Linux/Unix được cài đặt Ansible. Control nodes có thể thực thi các câu lệnh thông qua các công cụ dòng lệnh như `ansible` hoặc `ansible-playbook`
+2. *Managed nodes*: Là các máy cần được quản lý tự động bởi Ansible, thường được gọi là các *hosts*. Không cần cài đặt Ansible trên các máy này
+3. *Inventory file*: Là file chứa thông tin của các managed nodes, bao gồm hostname, IP, thông tin đăng nhập,... để giúp Ansible có thể kết nối SSH tới chúng
+4. *Module*: Là một chương trình con thực thi một tập hợp các nhiệm vụ nhất định, ví dụ module `file` giúp quản lý trạng thái của files, module `service` giúp quản lý trạng thái của các dịch vụ, v.v.
+5. *Task*: Mỗi task định nghĩa cách thức thực thi một hành động thông qua một module.
+6. *Playbook*: Mỗi playbook bao gồm một tập hợp các tasks được thực thi một cách tuần tự theo một kịch bản được định nghĩa trước
 
 ## Cài đặt và cấu hình
 
 ### Yêu cầu 
-- Control node: Chạy các hệ điều hành Linux/Unix phổ biến, có cài đặt Python 2.7 hoặc 3.5+, và có khả năng kết nối tới các máy chủ được quản lý (managed nodes)
-- Managed nodes: Có cài đặt OpenSSH server, Python 2.7 hoặc 3.5+
+- *Control node*: Chạy các hệ điều hành Linux/Unix phổ biến, có cài đặt Python 2.7 hoặc 3.5+, và có khả năng kết nối tới các máy chủ được quản lý (managed nodes)
+- *Managed nodes*: Có cài đặt OpenSSH server, Python 2.7 hoặc 3.5+
 
 *Chú ý*: Hiện tại, ansible vẫn sử dụng Python 2.7 theo mặc định. Để yêu cầu Ansible sử dụng Python 3, ta cần thêm cấu hình `ansible_python_interpreter` trong file inventory
 
@@ -31,17 +34,14 @@ Theo mặc định, Ansible mô tả những machines mà nó quản lý sử d�
 Cách thức cài đặt ansible trên các phiên bản hệ điều hành khác nhau được cập nhật trong tài liệu [này]([https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html))
 
 ### Cấu hình
-#### Configuration Files
 Đường dẫn file cấu hình của Ansible thường nằm tại các địa chỉ:
 - `./ansible.cfg`
 - `~/ansible.cfg`
 - `/etc/ansible/ansible.cfg`
 
-#### Environmental Configuration
-Có thể cấu hình Ansible sử dụng biến môi trường `ANSIBLE_CONFIG` để ghi đè các cấu hình trong file.
+Ta cũng có thể cấu hình Ansible sử dụng biến môi trường `ANSIBLE_CONFIG` để ghi đè các cấu hình trong file.
 
-#### Command Line Options
-Một vài cấu hình có thể được ghi đè thông qua câu lệnh `ansible` hoặc `ansible-playbook`
+Một vài cấu hình có thể được ghi đè bằng các chỉ thị khi chạy câu lệnh `ansible` hoặc `ansible-playbook`.
 
 ## Getting Started
 
